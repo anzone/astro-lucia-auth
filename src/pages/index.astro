@@ -11,6 +11,13 @@
 		<title>Astro</title>
 	</head>
 	<body>
-		<h1>Astro</h1>
+		<h1>Astro + Lucia Auth</h1>
+		<nav>
+			<ul>
+				<li><a href="/signup">Sign up</a></li>
+				<li><a href="/login">Login</a></li>
+			</ul>
+		</nav>
+		<p>{Astro.locals.user?.id ?? 'Not authenticated'}</p>
 	</body>
 </html>
