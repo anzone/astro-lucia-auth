@@ -1,0 +1,26 @@
+---
+
+---
+
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Astro</title>
+	</head>
+	<body>
+		<h1>Astro + Lucia Auth</h1>
+        <h2>Sign Up</h2>
+        <form action="/api/auth/signup" method="POST">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required />
+            <br><br>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required />
+            <br><br>
+            <button type="submit">Continue</button>
+        </form>
+	</body>
+</html>
