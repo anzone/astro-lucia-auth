@@ -1,38 +1,29 @@
 ---
-
+import Html from "@/ui/layout/Html.astro";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro + Lucia Auth</h1>
-		<nav>
-			<ul>
-				<li><a href="/signup">Sign up</a></li>
-				{
-					!Astro.locals.user?.id && (
-						<li>
-							<a href="/login">Login</a>
-						</li>
-					)
-				}
-				{
-					Astro.locals.user?.id && (
-						<li>
-							<form action="/api/auth/logout" method="post">
-								<button type="submit">Logout</button>
-							</form>
-						</li>
-					)
-				}
-			</ul>
-		</nav>
-		<p>{Astro.locals.user?.id ?? "Not authenticated"}</p>
-	</body>
-</html>
+<Html>
+  <h1>Astro + Lucia Auth</h1>
+  <nav>
+    <ul>
+      <li><a href="/signup">Sign up</a></li>
+      {
+        !Astro.locals.user?.id && (
+          <li>
+            <a href="/login">Login</a>
+          </li>
+        )
+      }
+      {
+        Astro.locals.user?.id && (
+          <li>
+            <form action="/api/auth/logout" method="post">
+              <button type="submit">Logout</button>
+            </form>
+          </li>
+        )
+      }
+    </ul>
+  </nav>
+  <p>{Astro.locals.user?.id ?? "Not authenticated"}</p>
+</Html>
