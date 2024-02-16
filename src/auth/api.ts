@@ -97,3 +97,16 @@ export const login: APIRoute = async (ctx) => {
 
     return ctx.redirect("/");
 }
+
+export const logout: APIRoute = async (ctx) => {
+    if (!ctx.locals.session) {
+        return new Response(null, { status: 401 });
+    }
+
+    await lucia.invalidateSession(ctx.locals.session.id);
+
+    const { name, value, attributes } = lucia.createBlankSessionCookie();
+    ctx.cookies.set(name, value, attributes);
+
+    return ctx.redirect("/");
+}
