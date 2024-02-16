@@ -26,7 +26,7 @@ const isValidPassword = (password: any) => (
     password.length < 255
 )
 
-export const signUp: APIRoute = async (ctx) => {
+export const signup: APIRoute = async (ctx) => {
     const formData = await ctx.request.formData();
 
     const username = formData.get("username");
