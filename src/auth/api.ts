@@ -14,99 +14,99 @@ const sqliteDB = sqlite('auth.db')
 const db = drizzle(sqliteDB, { schema })
 
 const isValidUsername = (username: any) => (
-    typeof username === "string" ||
-    username.length > 3 ||
-    username.length < 31 ||
-    !/^[a-zA-Z0-9_]+$/.test(username)
+  typeof username === "string" ||
+  username.length > 3 ||
+  username.length < 31 ||
+  !/^[a-zA-Z0-9_]+$/.test(username)
 )
 
 const isValidPassword = (password: any) => (
-    typeof password === "string" ||
-    password.length > 6 ||
-    password.length < 255
+  typeof password === "string" ||
+  password.length > 6 ||
+  password.length < 255
 )
 
 export const signup: APIRoute = async (ctx) => {
-    const formData = await ctx.request.formData();
+  const formData = await ctx.request.formData();
 
-    const username = formData.get("username");
-    if (!isValidUsername(username)) {
-        return new Response("Invalid username", { status: 400 });
-    }
+  const username = formData.get("username");
+  if (!isValidUsername(username)) {
+    return ctx.redirect("/?err=Invalid%20username");
+  }
 
-    const password = formData.get("password");
-    if (!isValidPassword(password)) {
-        return new Response("Invalid password", { status: 400 });
-    }
+  const password = formData.get("password");
+  if (!isValidPassword(password)) {
+    return ctx.redirect("/?err=Invalid%20password");
+  }
 
-    const userId = generateId(16);
-    const hashedPassword = await new Argon2id().hash(password as string);
+  const userId = generateId(16);
+  const hashedPassword = await new Argon2id().hash(password as string);
 
-    const existingUser = await db.query.user.findFirst({
-        where: (user, {eq}) => eq(user.username, username as string)
+  const existingUser = await db.query.user.findFirst({
+    where: (user, { eq }) => eq(user.username, username as string)
+  })
+
+  if (existingUser) {
+    return ctx.redirect("/?err=Username%20already%20taken");
+  } else {
+    await db.insert(schema.user).values({
+      id: userId,
+      username: username as string,
+      hashedPassword,
     })
+  }
 
-    if (existingUser) {
-        return new Response("Username already taken", { status: 400 });
-    } else {
-        await db.insert(schema.user).values({
-            id: userId,
-            username: username as string,
-            hashedPassword,
-        })
-    }
+  const session = await lucia.createSession(userId, {});
+  const { name, value, attributes } = lucia.createSessionCookie(session.id);
 
-    const session = await lucia.createSession(userId, {});
-    const { name, value, attributes } = lucia.createSessionCookie(session.id);
+  ctx.cookies.set(name, value, attributes);
 
-    ctx.cookies.set(name, value, attributes);
-
-    return ctx.redirect("/");
+  return ctx.redirect("/");
 }
 
 export const login: APIRoute = async (ctx) => {
-    const formData = await ctx.request.formData();
+  const formData = await ctx.request.formData();
 
-    const username = formData.get('username');
-    if (!isValidUsername(username)) {
-        return new Response("Invalid username", { status: 400 });
-    }
+  const username = formData.get('username');
+  if (!isValidUsername(username)) {
+    return new Response("Invalid username", { status: 400 });
+  }
 
-    const password = formData.get('password');
-    if (!isValidPassword(password)) {
-        return new Response("Invalid password", { status: 400 });
-    }
+  const password = formData.get('password');
+  if (!isValidPassword(password)) {
+    return new Response("Invalid password", { status: 400 });
+  }
 
-    const existingUser = await db.query.user.findFirst({
-        where: (user, {eq}) => eq(user.username, username as string)
-    })
+  const existingUser = await db.query.user.findFirst({
+    where: (user, { eq }) => eq(user.username, username as string)
+  })
 
-    if (!existingUser) {
-        return new Response("Incorrect username or password", { status: 400 });
-    }
+  if (!existingUser) {
+    return new Response("Incorrect username or password", { status: 400 });
+  }
 
-    const validPassword = await new Argon2id().verify(existingUser.hashedPassword, password as string);
-    if (!validPassword) {
-        return new Response("Incorrect username or password", { status: 400 });
-    }
+  const validPassword = await new Argon2id().verify(existingUser.hashedPassword, password as string);
+  if (!validPassword) {
+    return new Response("Incorrect username or password", { status: 400 });
+  }
 
-    const session = await lucia.createSession(existingUser.id, {});
-    const { name, value, attributes } = lucia.createSessionCookie(session.id);
+  const session = await lucia.createSession(existingUser.id, {});
+  const { name, value, attributes } = lucia.createSessionCookie(session.id);
 
-    ctx.cookies.set(name, value, attributes);
+  ctx.cookies.set(name, value, attributes);
 
-    return ctx.redirect("/");
+  return ctx.redirect("/");
 }
 
 export const logout: APIRoute = async (ctx) => {
-    if (!ctx.locals.session) {
-        return new Response(null, { status: 401 });
-    }
+  if (!ctx.locals.session) {
+    return new Response(null, { status: 401 });
+  }
 
-    await lucia.invalidateSession(ctx.locals.session.id);
+  await lucia.invalidateSession(ctx.locals.session.id);
 
-    const { name, value, attributes } = lucia.createBlankSessionCookie();
-    ctx.cookies.set(name, value, attributes);
+  const { name, value, attributes } = lucia.createBlankSessionCookie();
+  ctx.cookies.set(name, value, attributes);
 
-    return ctx.redirect("/");
+  return ctx.redirect("/");
 }
