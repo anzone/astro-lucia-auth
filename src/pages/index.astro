@@ -19,7 +19,7 @@ import Button from "@/ui/elements/Button.astro";
       <div class="flex-1">
         <strong class="block font-medium text-gray-900">Auth Status:</strong>
         <p class="mt-1 text-sm text-gray-700">
-          {Astro.locals.user?.id ? "Authenticated" : "Not authenticated"}
+          {Astro.locals.user?.id ? JSON.stringify(Astro.locals.user, null, 2) : "Not authenticated"}
         </p>
       </div>
     </div>
@@ -31,8 +31,13 @@ import Button from "@/ui/elements/Button.astro";
       ]}
     />
     <form action="/api/auth/signup" method="POST" class="flex flex-col gap-2">
-      <Input id="username" label="Username" required />
-      <Input id="password" label="Password" type="password" required />
+      {Astro.url.searchParams.get('err') && (
+        <div class="rounded bg-red-100 p-4">
+          <p class="text-sm text-red-700">{Astro.url.searchParams.get('err')}</p>
+        </div>
+      )}
+      <Input id="username" name="username" label="Username" required />
+      <Input id="password" name="password" label="Password" type="password" required />
       <Button type="submit">Continue</Button>
     </form>
   </div>
