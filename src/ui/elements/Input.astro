@@ -1,0 +1,17 @@
+---
+import { type HTMLAttributes } from 'astro/types'
+
+type Props = HTMLAttributes<'input'> & {
+  label: string
+}
+
+const { label, ...props } = Astro.props;
+---
+
+<div>
+  <label for={props.id} class="block text-sm font-medium text-gray-700">{label}</label>
+  <input
+    class="mt-1 w-full rounded border-gray-200 shadow-sm sm:text-sm"
+    {...props}
+  />
+</div>
