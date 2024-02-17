@@ -1,0 +1,37 @@
+---
+type Props = {
+  options: {
+    label: string;
+    value: string;
+  }[];
+};
+
+const { options } = Astro.props;
+---
+
+<div>
+  <div class="sm:hidden">
+    <label for="Tab" class="sr-only">Tab</label>
+    <select id="Tab" class="w-full rounded border-gray-200" value={Astro.url.pathname}>
+      {options.map((option) => (
+        <option value={option.value}>{option.label}</option>
+      ))}
+    </select>
+  </div>
+  <div class="hidden sm:block">
+    <nav class="flex gap-4" aria-label="Tabs">
+      {options.map((option) => (
+        <a
+          href={option.value}
+          class="transition-colors"
+          class:list={{
+            "shrink-0 rounded p-2 text-sm font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700": Astro.url.pathname !== option.value,
+            "shrink-0 rounded bg-gray-100 p-2 text-sm font-medium text-gray-700": Astro.url.pathname === option.value,
+          }}
+        >
+          {option.label}
+        </a>
+      ))}
+    </nav>
+  </div>
+</div>
