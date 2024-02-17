@@ -1,5 +1,5 @@
 ---
-
+import Sidebar from "../components/Sidebar.astro"
 ---
 
 <html lang="en">
@@ -15,11 +15,11 @@
     <main class="w-full max-w-screen-md mx-auto py-8 px-4 gap-8 grid grid-cols-12 auto-rows-auto">
       <header class="flex flex-row items-center justify-center gap-8 col-span-12">
         <span class="icon-[devicon--astro] w-24 h-24"></span>
-        <span class="icon-[tabler--x] w-12 h-12"></span>
+        <span class="icon-[tabler--x] w-12 h-12 text-gray-400"></span>
         <img src="lucia-logo.webp" class="w-24 h-24" alt="Lucia Auth">
       </header>
       <aside class="col-span-4 border-r">
-        sidebar
+        <Sidebar />
       </aside>
       <section class="col-span-8">
         <slot />
